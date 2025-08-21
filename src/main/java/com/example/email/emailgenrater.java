@@ -3,17 +3,41 @@ package com.example.email;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping("/api/email")
+@RequestMapping("/api")
 public class emailgenrater {
     @Autowired
     serviceemail service;
-    @PostMapping("/genrate")
-    public ResponseEntity<String> genrateemail (@RequestBody Emailrequest email) {
-        String responce=service.genrateemail(email);
-        return ResponseEntity.ok(responce);
+
+
+    @PostMapping("/generate")
+    public ResponseEntity<String> generateEmail(@RequestBody Emailrequest email) {
+        String response = service.generateEmail(email);
+        return ResponseEntity.ok(response);
+    }
+
+
+    @Autowired
+    private DocumentService documentService;
+
+    // Upload file and return extracted text
+    @PostMapping("/upload")
+    public String uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
+        String extractedText = documentService.extractText(file);
+
+        if (extractedText == null || extractedText.isEmpty()) {
+            return "No text found in the document!";
+        }
+
+        // Convert string -> EmailRequest
+       Emailrequest emailRequest = new Emailrequest();
+       emailRequest.setEmailContent(extractedText);
+       emailRequest.setTone("neutral"); // Default tone or modify as needed
+
+       return service.generateEmail(emailRequest);
     }
 
 }
