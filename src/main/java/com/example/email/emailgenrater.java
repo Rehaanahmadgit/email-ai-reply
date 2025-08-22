@@ -6,26 +6,26 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 @RequestMapping("/api")
 public class emailgenrater {
     @Autowired
     serviceemail service;
-
-
-    @PostMapping("/generate")
-    public ResponseEntity<String> generateEmail(@RequestBody Emailrequest email) {
-        String response = service.generateEmail(email);
-        return ResponseEntity.ok(response);
-    }
-
+//
+//
+//    @PostMapping("/generate")
+//    public ResponseEntity<String> generateEmail(@RequestBody Emailrequest email) {
+//        String response = service.generateEmail(email);
+//        return ResponseEntity.ok(response);
+//    }
+//
 
     @Autowired
     private DocumentService documentService;
 
     // Upload file and return extracted text
     @PostMapping("/upload")
-    public String uploadFile(@RequestParam("file") MultipartFile file) throws Exception {
+    public String uploadFile(@RequestParam("file") MultipartFile file, @RequestParam("question") String question) throws Exception {
         String extractedText = documentService.extractText(file);
 
         if (extractedText == null || extractedText.isEmpty()) {
@@ -33,11 +33,13 @@ public class emailgenrater {
         }
 
         // Convert string -> EmailRequest
-       Emailrequest emailRequest = new Emailrequest();
-       emailRequest.setEmailContent(extractedText);
-       emailRequest.setTone("neutral"); // Default tone or modify as needed
+        Textcontent textcontent = new Textcontent();
 
-       return service.generateEmail(emailRequest);
+        textcontent.setContent(extractedText);
+        textcontent.setQuestion(question);
+        // Default tone or modify as needed
+
+        return service.getnrateanswer(textcontent);
     }
-
 }
+

@@ -28,6 +28,7 @@ public class serviceemail {
 
     public String generateEmail(Emailrequest email) {
         String prompt = buildPrompt(email);
+        System.out.println(prompt);
         Map<String , Object> requestbody=Map.of(
                 "contents",new Object[] {
                         Map.of("parts",new Object[] {
@@ -64,20 +65,59 @@ public class serviceemail {
             return e.getMessage();
         }
     }
-
-
     private String buildPrompt(Emailrequest email) {
         StringBuilder prompt = new StringBuilder();
 
 
 
-        prompt.append("Generate a professional email reply for the following email content. Please don't generate a subject line.");
-//        prompt.append(" i give you  document content so give summarize answer = ");
+//        prompt.append("Generate a professional email reply for the following email content. Please don't generate a subject line.");
+        prompt.append(" i give you  document content so give  summarize answer form  = ");
         if (email.getTone() != null && !email.getTone().isEmpty()) {
             prompt.append(" Use a ").append(email.getTone()).append(" tone.");
 
         }
         prompt.append("\nOriginal email:\n").append(email.getEmailContent());
+        return prompt.toString();
+    }
+
+
+    public String getnrateanswer(Textcontent reply) {
+        String prompt =askingquestion(reply);
+
+        Map<String , Object> requestbody=Map.of(
+                "contents",new Object[] {
+                        Map.of("parts",new Object[] {
+                                Map.of("text", prompt)
+                        })
+                }
+        );
+        String response = webClient.post()
+                .uri(geminiapiurl + gminiapikey)
+                .header("content-type","application/json")
+                .bodyValue(requestbody)
+                .retrieve()
+                .bodyToMono(String.class)
+                .block();
+
+        return extractResponseContent(response);
+    }
+    private String askingquestion(Textcontent reply) {
+        StringBuilder prompt = new StringBuilder();
+
+
+
+//        prompt.append("Generate a professional email reply for the following email content. Please don't generate a subject line.");
+
+        if (reply.getQuestion() != null && !reply.getContent().isEmpty()) {
+            prompt.append("this is my detail conntent of document " );
+            prompt.append(":"+reply.getContent());
+            prompt.append(" \n");
+            prompt.append(" : .so give me  your answer depend on my question : the question is : ");
+            prompt.append(reply.getQuestion());
+            prompt.append("\n");
+            prompt.append(" tell me :");
+
+        }
         return prompt.toString();
     }
 
