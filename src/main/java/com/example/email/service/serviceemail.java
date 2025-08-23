@@ -1,5 +1,7 @@
-package com.example.email;
+package com.example.email.service;
 
+import com.example.email.entity.Emailrequest;
+import com.example.email.entity.Textcontent;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -9,7 +11,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import java.util.Map;
-import java.util.Objects;
 
 @Service
 public class serviceemail {

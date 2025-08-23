@@ -1,4 +1,4 @@
-package com.example.email;
+package com.example.email.service;
 
 import org.apache.pdfbox.pdmodel.PDDocument;
 import org.apache.pdfbox.text.PDFTextStripper;

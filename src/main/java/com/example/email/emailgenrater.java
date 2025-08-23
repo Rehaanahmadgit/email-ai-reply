@@ -1,5 +1,12 @@
 package com.example.email;
 
+import com.example.email.entity.CodeRequest;
+import com.example.email.entity.RunResponse;
+import com.example.email.entity.Textcontent;
+import com.example.email.service.DocumentService;
+import com.example.email.service.JavaRunnerService;
+import com.example.email.service.serviceemail;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,17 +16,18 @@ import org.springframework.web.multipart.MultipartFile;
 @CrossOrigin(origins = "*")
 @RequestMapping("/api")
 public class emailgenrater {
-    @Autowired
-    serviceemail service;
-//
+
+    //
 //
 //    @PostMapping("/generate")
 //    public ResponseEntity<String> generateEmail(@RequestBody Emailrequest email) {
 //        String response = service.generateEmail(email);
 //        return ResponseEntity.ok(response);
 //    }
-//
-
+    @Autowired
+    serviceemail service;
+    @Autowired
+    private final JavaRunnerService runner;
     @Autowired
     private DocumentService documentService;
 
@@ -41,5 +49,24 @@ public class emailgenrater {
 
         return service.getnrateanswer(textcontent);
     }
+
+
+    public emailgenrater(JavaRunnerService runner) {
+        this.runner = runner;
+    }
+
+    @PostMapping(value = "/compile-run", consumes = "application/json", produces = "application/json")
+  public ResponseEntity<RunResponse> compileRun(@Valid @RequestBody CodeRequest req) {
+        try {
+            var result = runner.compileAndRun(req.getCode());
+            var resp = new RunResponse(result.success(), result.stage(), result.out(), result.err(), result.timeMs());
+            return ResponseEntity.ok(resp);
+        } catch (Exception e) {
+            var resp = new RunResponse(false, "error", "", e.getMessage(), 0);
+            return ResponseEntity.status(500).body(resp);
+        }
+    }
+
+
 }
 

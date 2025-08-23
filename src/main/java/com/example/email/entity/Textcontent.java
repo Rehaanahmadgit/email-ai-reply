@@ -1,9 +1,9 @@
-package com.example.email;
+package com.example.email.entity;
 
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
-import org.springframework.stereotype.Service;
+
 @Data
 @Getter
 @Setter

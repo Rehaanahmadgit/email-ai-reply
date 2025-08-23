@@ -1,4 +1,4 @@
-package com.example.email;
+package com.example.email.entity;
 
 import lombok.Data;
 
